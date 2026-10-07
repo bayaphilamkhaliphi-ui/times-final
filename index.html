@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Times of Eswatini HR Management Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* (same as original, no changes needed) */
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+        body { background:linear-gradient(135deg,#8B0000,#D40000); height:100vh; display:flex; justify-content:center; align-items:center; }
+        .container { width:100%; max-width:1000px; background:white; border-radius:20px; overflow:hidden; display:grid; grid-template-columns:1.1fr 0.9fr; box-shadow:0 20px 50px rgba(0,0,0,.25); }
+        .left { background:#8B0000; color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:60px; text-align:center; }
+        .left h1 { font-size:40px; margin-bottom:15px; }
+        .left h3 { font-weight:400; }
+        .right { padding:50px; }
+        .logo { text-align:center; margin-bottom:30px; }
+        .logo h2 { color:#8B0000; font-size:30px; }
+        .logo p { color:#666; }
+        .form-group { margin-bottom:20px; }
+        label { display:block; margin-bottom:8px; font-weight:500; }
+        input, select { width:100%; padding:14px; border:1px solid #ccc; border-radius:8px; font-size:15px; }
+        .password-wrapper { position:relative; display:flex; align-items:center; }
+        .password-wrapper input { padding-right:45px; }
+        .toggle-password { position:absolute; right:15px; cursor:pointer; color:#777; display:flex; align-items:center; justify-content:center; transition:color 0.3s ease; }
+        .toggle-password:hover { color:#8B0000; }
+        button { width:100%; padding:15px; border:none; border-radius:8px; background:#8B0000; color:white; font-size:16px; cursor:pointer; margin-top:10px; }
+        button:hover { background:#600000; }
+        .register { margin-top:15px; text-align:center; }
+        .register a { display:block; text-decoration:none; background:#eee; color:#8B0000; padding:13px; border-radius:8px; font-weight:600; }
+        .register a:hover { background:#ddd; }
+        @media(max-width:850px) { .container { grid-template-columns:1fr; } .left { display:none; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h1>Times of Eswatini</h1>
+            <h3>Human Resource Management Portal</h3>
+        </div>
+        <div class="right">
+            <div class="logo">
+                <h2>Login</h2>
+                <p>Please sign in to continue</p>
+            </div>
+
+            <form action="login.php" method="POST">
+                <div class="form-group">
+                    <label>Login As</label>
+                    <select id="role" name="role" required>
+                        <option value="">Select User Type</option>
+                        <option value="admin">Administrator</option>
+                        <option value="linemanager">Line Manager</option>
+                        <option value="employee">Staff</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter password" required>
+                        <span class="toggle-password" id="togglePassword" title="Toggle Password Visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <button type="submit" name="login_btn">Login</button>
+            </form>
+
+            <div class="register">
+                <p style="margin-bottom:10px; color:#666; font-size:14px;">Don't have an account?</p>
+                <a href="register.html">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.style.color = type === 'text' ? '#8B0000' : '#777';
+        });
+    </script>
+</body>
+</html>

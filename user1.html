@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Times of Eswatini - Portal & Performance Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #8B0000;
+        --primary-hover: #600000;
+        --text-dark: #333333;
+        --text-light: #666666;
+        --border-color: #e0e0e0;
+        --bg-light: #f9f9f9;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #8B0000, #D40000);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1100px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        padding: 30px 40px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .portal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+    }
+
+    .header-title-container {
+        text-align: center;
+        flex-grow: 1;
+    }
+
+    .portal-header h2 {
+        color: var(--primary-color);
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .portal-header span {
+        font-size: 13px;
+        color: var(--text-light);
+        background: #f4f6f9;
+        padding: 4px 12px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .back-btn, .logout-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background-color: #f4f6f9;
+        color: var(--text-dark);
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid var(--border-color);
+        cursor: pointer;
+    }
+
+    .back-btn:hover, .logout-btn:hover {
+        background-color: var(--primary-color);
+        color: #ffffff;
+        border-color: var(--primary-color);
+    }
+
+    .view-section {
+        display: none;
+    }
+    .view-section.active {
+        display: block;
+    }
+
+    .login-box {
+        max-width: 400px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-weight: 500;
+        color: var(--text-dark);
+        margin-bottom: 5px;
+        font-size: 13px;
+    }
+
+    input[type=text],
+    input[type=password],
+    input[type=email],
+    textarea,
+    select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text-dark);
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    input[type=text]:focus,
+    input[type=password]:focus,
+    input[type=email]:focus,
+    textarea:focus,
+    select:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+    }
+
+    .primary-btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .primary-btn:hover {
+        background: var(--primary-hover);
+    }
+
+    .error-msg {
+        color: #d32f2f;
+        font-size: 12px;
+        margin-top: 8px;
+        text-align: center;
+        display: none;
+    }
+
+    .dashboard-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 8px 16px;
+        background: #f4f6f9;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--text-dark);
+    }
+
+    .tab-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        max-height: 280px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+        background: var(--bg-light);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .csv-input-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 2fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+        background: var(--bg-light);
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .action-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .team-list {
+        list-style: none;
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px;
+        background: var(--bg-light);
+    }
+
+    .team-list li {
+        padding: 10px;
+        background: white;
+        border-radius: 6px;
+        margin-bottom: 6px;
+        font-size: 13px;
+        border: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .delete-member-btn {
+        background: #d32f2f;
+        color: white;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    .delete-member-btn:hover { background: #b71c1c; }
+
+    #toast {
+        visibility: hidden;
+        min-width: 250px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 8px;
+        padding: 12px;
+        position: fixed;
+        z-index: 1000;
+        right: 30px;
+        bottom: 30px;
+        font-size: 14px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    #toast.show {
+        visibility: visible;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+    @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+    @media(max-width: 768px) {
+        .csv-input-grid { grid-template-columns: 1fr; }
+        .team-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="portal-header">
+        <a href="index.html" class="back-btn" id="navBackBtn" title="Back to Home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            <span>Back</span>
+        </a>
+
+        <div class="header-title-container">
+            <h2>Times of Eswatini Portal</h2>
+            <span id="headerSubText">Authentication Portal</span>
+        </div>
+
+        <button class="logout-btn" id="logoutBtn" style="display: none;" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- VIEW 1: LOGIN SCREEN -->
+    <div id="loginView" class="view-section active">
+        <div class="login-box">
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address (Username)</label>
+                    <input type="text" id="loginUser" placeholder="Enter admin or member email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="primary-btn">Sign In</button>
+                <div id="loginError" class="error-msg">Invalid credentials. Member credentials match email.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- VIEW 2: ADMIN DASHBOARD -->
+    <div id="adminDashboardView" class="view-section">
+        <div class="dashboard-tabs">
+            <button class="tab-btn active" onclick="switchAdminTab(event, 'csvTab')">KPI Records Workbook</button>
+            <button class="tab-btn" onclick="switchAdminTab(event, 'teamTab')">Manage Department Members</button>
+            <button class="tab-btn" onclick="switchAdminTab(event, 'reportsTab')">Department Reports</button>
+            <button class="tab-btn" onclick="switchAdminTab(event, 'docUploadTab')">Upload SOPs / Policies</button>
+        </div>
+
+        <!-- TAB 1: CSV WORKBOOK -->
+        <div id="csvTab" class="tab-content active">
+            <p style="font-size: 13px; color: var(--text-light); margin-bottom: 12px;">Type records into the text boxes below, then click <strong>Save Record & Add Another</strong>.</p>
+            
+            <div class="csv-input-grid">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Task</label>
+                    <textarea id="csvTask" placeholder="Enter task..." style="height: 40px; resize: none;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Task Weight</label>
+                    <input type="text" id="csvTaskWeight" placeholder="e.g. 20%">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Output</label>
+                    <textarea id="csvOutput" placeholder="Enter output..." style="height: 40px; resize: none;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Output Weight</label>
+                    <input type="text" id="csvOutputWeight" placeholder="e.g. 20%">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <button type="button" class="primary-btn" onclick="addCsvRecord()">Save Record & Add Another</button>
+            </div>
+
+            <div class="table-container">
+                <table id="csvTable">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Task Weight</th>
+                            <th>Output</th>
+                            <th>Output Weight</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="csvTableBody">
+                        <!-- Dynamically added records -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-row">
+                <button type="button" class="primary-btn" style="width: auto;" onclick="saveCsvWorkbook()">Finalize & Save Workbook</button>
+            </div>
+        </div>
+
+        <!-- TAB 2: MANAGE TEAM MEMBERS -->
+        <div id="teamTab" class="tab-content">
+            <div class="team-grid">
+                <div>
+                    <form id="addMemberForm" onsubmit="addTeamMember(event)">
+                        <div class="form-group">
+                            <label>Member Full Name</label>
+                            <input type="text" id="memberName" placeholder="e.g. John Dlamini" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address (Serves as Username & Password)</label>
+                            <input type="email" id="memberEmail" placeholder="e.g. johnd@times.co.sz" required>
+                        </div>
+                        <button type="submit" class="primary-btn">Add Team Member</button>
+                    </form>
+                </div>
+                <div>
+                    <label>Your Department Members</label>
+                    <ul class="team-list" id="teamListContainer">
+                        <li style="color: var(--text-light); text-align: center; display: block;">No team members added yet.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: DEPARTMENT REPORTS -->
+        <div id="reportsTab" class="tab-content">
+            <h3 style="color: var(--primary-color); margin-bottom: 6px;">Team Self-Evaluation & Manager Review</h3>
+            <p style="font-size: 13px; color: var(--text-light); margin-bottom: 15px;">Review member ratings and comments below, then provide your managerial score and comments.</p>
+            
+            <div class="table-container" style="max-height: 350px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Task</th>
+                            <th>Self Rating (1-5)</th>
+                            <th>Self Comment</th>
+                            <th>Admin Score (1-5)</th>
+                            <th>Admin Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminReportTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="action-row">
+                <button type="button" class="primary-btn" style="width: auto;" onclick="saveAdminEvaluations()">Save Admin Evaluations</button>
+            </div>
+        </div>
+
+        <!-- TAB 4: SOP & POLICIES UPLOAD -->
+        <div id="docUploadTab" class="tab-content">
+            <form action="upload.php" method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="form-group">
+                        <label>Document Category</label>
+                        <select name="category" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="SOP">SOP</option>
+                            <option value="Policies">Policies</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Document Title</label>
+                        <input type="text" name="title" placeholder="e.g. HR Safety Manual" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" placeholder="Brief outline of the document content..." style="resize:none; height:60px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Select File</label>
+                    <input type="file" name="documents[]" required style="padding: 8px; border:1px solid var(--border-color); border-radius:8px; width:100%;">
+                </div>
+                <button type="submit" class="primary-btn">Upload Document</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- VIEW 3: USER DASHBOARD -->
+    <div id="userDashboardView" class="view-section">
+        <h3 style="color: var(--primary-color); margin-bottom: 8px;">Performance Review & Target Assessment</h3>
+        <p style="font-size: 13px; color: var(--text-light); margin-bottom: 15px;">Review your department's assigned targets, rate your performance on a scale from <strong>1 to 5</strong>, and provide your justification comments.</p>
+
+        <form id="userReviewForm" onsubmit="submitUserReview(event)">
+            <div class="table-container" style="max-height: 350px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Task Weight</th>
+                            <th>Output</th>
+                            <th>Output Weight</th>
+                            <th>Rating (1 - 5)</th>
+                            <th>Justification Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userReviewTableBody">
+                        <!-- Populated dynamically based on logged-in user's admin -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 15px; display: flex; justify-content: flex-end;">
+                <button type="submit" class="primary-btn" style="width: auto; padding: 12px 24px;">Submit Performance Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="toast">Action completed successfully!</div>
+
+<script>
+    const adminAccounts = {
+        "admin": "martind@times.co.sz",
+        "martind@times.co.sz": "martind@times.co.sz",
+        "thobekam@times.co.sz": "thobekam@times.co.sz",
+        "mbongisenin@times.co.sz": "mbongisenin@times.co.sz",
+        "noxolom@times.co.sz": "noxolom@times.co.sz",
+        "thembieg@times.co.sz": "thembieg@times.co.sz",
+        "busiswad@times.co.sz": "busiswad@times.co.sz",
+        "phumelelen@times.co.sz": "phumelelen@times.co.sz"
+    };
+
+    // Store records per admin email
+    let departmentKpis = {
+        "martind@times.co.sz": [
+            { task: "Daily Newspaper Layout & Verification", taskWeight: "25%", output: "Published editions error-free", outputWeight: "25%" },
+            { task: "Digital Submissions Collection", taskWeight: "25%", output: "All reporter articles aggregated", outputWeight: "25%" }
+        ]
+    };
+
+    // Store team members mapped by their admin's email
+    let teamMembers = []; // { name, email, adminEmail }
+
+    // Store submissions / reports
+    let submittedReviews = []; // { memberEmail, memberName, adminEmail, taskIndex, taskName, selfRating, selfComment, adminScore, adminComment }
+
+    let currentLoggedInUser = null;
+    let currentAdminEmail = null;
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const user = document.getElementById('loginUser').value.trim().toLowerCase();
+        const pass = document.getElementById('loginPass').value.trim();
+        const errorMsg = document.getElementById('loginError');
+
+        let isAdmin = (adminAccounts[user] && adminAccounts[user] === pass);
+        let teamMemberObj = teamMembers.find(m => m.email === user && m.email === pass);
+
+        if (isAdmin) {
+            currentLoggedInUser = user === 'admin' ? 'martind@times.co.sz' : user;
+            currentAdminEmail = currentLoggedInUser;
+            errorMsg.style.display = 'none';
+            document.getElementById('loginView').classList.remove('active');
+            document.getElementById('adminDashboardView').classList.add('active');
+            document.getElementById('logoutBtn').style.display = 'inline-flex';
+            document.getElementById('navBackBtn').style.display = 'none';
+            document.getElementById('headerSubText').innerText = `Admin: ${currentLoggedInUser}`;
+            
+            if(!departmentKpis[currentAdminEmail]) departmentKpis[currentAdminEmail] = [];
+            renderCsvTable();
+            renderTeamList();
+            renderAdminReports();
+            showToast("Logged in as Admin successfully!");
+        } else if (teamMemberObj) {
+            currentLoggedInUser = teamMemberObj.email;
+            currentAdminEmail = teamMemberObj.adminEmail;
+            errorMsg.style.display = 'none';
+            document.getElementById('loginView').classList.remove('active');
+            document.getElementById('userDashboardView').classList.add('active');
+            document.getElementById('logoutBtn').style.display = 'inline-flex';
+            document.getElementById('navBackBtn').style.display = 'none';
+            document.getElementById('headerSubText').innerText = `Team Member: ${teamMemberObj.name} (${teamMemberObj.email})`;
+            renderUserReviewTable();
+            showToast("Logged in to User Dashboard successfully!");
+        } else {
+            errorMsg.style.display = 'block';
+        }
+    }
+
+    function handleLogout() {
+        currentLoggedInUser = null;
+        currentAdminEmail = null;
+        document.getElementById('adminDashboardView').classList.remove('active');
+        document.getElementById('userDashboardView').classList.remove('active');
+        document.getElementById('loginView').classList.add('active');
+        document.getElementById('logoutBtn').style.display = 'none';
+        document.getElementById('navBackBtn').style.display = 'inline-flex';
+        document.getElementById('headerSubText').innerText = 'Authentication Portal';
+        document.getElementById('loginForm').reset();
+        showToast("Logged out successfully.");
+    }
+
+    function switchAdminTab(evt, tabName) {
+        let tabs = document.getElementsByClassName('tab-content');
+        for (let t of tabs) t.classList.remove('active');
+
+        let btns = document.getElementsByClassName('tab-btn');
+        for (let b of btns) b.classList.remove('active');
+
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
+
+        if(tabName === 'reportsTab') {
+            renderAdminReports();
+        }
+    }
+
+    function addCsvRecord() {
+        const task = document.getElementById('csvTask').value.trim();
+        const taskWeight = document.getElementById('csvTaskWeight').value.trim();
+        const output = document.getElementById('csvOutput').value.trim();
+        const outputWeight = document.getElementById('csvOutputWeight').value.trim();
+
+        if (!task || !output) {
+            alert('Please fill out at least the Task and Output fields before saving.');
+            return;
+        }
+
+        if(!departmentKpis[currentAdminEmail]) departmentKpis[currentAdminEmail] = [];
+        departmentKpis[currentAdminEmail].push({ task, taskWeight, output, outputWeight });
+        renderCsvTable();
+
+        document.getElementById('csvTask').value = '';
+        document.getElementById('csvTaskWeight').value = '';
+        document.getElementById('csvOutput').value = '';
+        document.getElementById('csvOutputWeight').value = '';
+        document.getElementById('csvTask').focus();
+
+        showToast("Record saved! You can enter another.");
+    }
+
+    function renderCsvTable() {
+        const tbody = document.getElementById('csvTableBody');
+        tbody.innerHTML = '';
+        let kpis = departmentKpis[currentAdminEmail] || [];
+        if (kpis.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-light);">No records added yet.</td></tr>`;
+            return;
+        }
+        kpis.forEach((row, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.task}</td>
+                    <td>${row.taskWeight}</td>
+                    <td>${row.output}</td>
+                    <td>${row.outputWeight}</td>
+                    <td><button type="button" onclick="removeCsvRow(${index})" style="background:#d32f2f; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Delete</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function removeCsvRow(index) {
+        departmentKpis[currentAdminEmail].splice(index, 1);
+        renderCsvTable();
+    }
+
+    function saveCsvWorkbook() {
+        showToast("Department KPIs finalized and published session-wide!");
+    }
+
+    function addTeamMember(e) {
+        e.preventDefault();
+        const name = document.getElementById('memberName').value.trim();
+        const email = document.getElementById('memberEmail').value.trim().toLowerCase();
+
+        if (teamMembers.some(m => m.email === email)) {
+            alert("A team member with this email address already exists globally.");
+            return;
+        }
+
+        teamMembers.push({ name, email, adminEmail: currentAdminEmail });
+        renderTeamList();
+        document.getElementById('addMemberForm').reset();
+        showToast("Team member added to your department successfully!");
+    }
+
+    function renderTeamList() {
+        const container = document.getElementById('teamListContainer');
+        container.innerHTML = '';
+        let myMembers = teamMembers.filter(m => m.adminEmail === currentAdminEmail);
+        if (myMembers.length === 0) {
+            container.innerHTML = `<li style="color: var(--text-light); text-align: center; display: block;">No team members added yet.</li>`;
+            return;
+        }
+        myMembers.forEach((member) => {
+            let globalIndex = teamMembers.findIndex(m => m.email === member.email);
+            container.innerHTML += `
+                <li>
+                    <div>
+                        <strong>${member.name}</strong><br>
+                        <span style="font-size: 11px; color: var(--text-light);">${member.email}</span>
+                    </div>
+                    <button type="button" class="delete-member-btn" onclick="removeTeamMember(${globalIndex})">Delete</button>
+                </li>
+            `;
+        });
+    }
+
+    function removeTeamMember(index) {
+        if (confirm("Are you sure you want to remove this team member?")) {
+            teamMembers.splice(index, 1);
+            renderTeamList();
+            showToast("Team member removed successfully.");
+        }
+    }
+
+    function renderUserReviewTable() {
+        const tbody = document.getElementById('userReviewTableBody');
+        tbody.innerHTML = '';
+        let kpis = departmentKpis[currentAdminEmail] || [];
+        if (kpis.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-light);">No tasks/records currently published by your department admin.</td></tr>`;
+            return;
+        }
+        kpis.forEach((row, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${row.task}</strong></td>
+                    <td>${row.taskWeight || 'N/A'}</td>
+                    <td>${row.output}</td>
+                    <td>${row.outputWeight || 'N/A'}</td>
+                    <td>
+                        <select name="rating_${index}" id="user_rating_${index}" required style="padding: 6px; border-radius: 6px; border:1px solid var(--border-color);">
+                            <option value="" disabled selected>Select (1-5)</option>
+                            <option value="1">1 - Unsatisfactory</option>
+                            <option value="2">2 - Needs Improvement</option>
+                            <option value="3">3 - Meets Expectations</option>
+                            <option value="4">4 - Exceeds Expectations</option>
+                            <option value="5">5 - Outstanding</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" id="user_comment_${index}" placeholder="Type justification comment..." required style="padding: 6px 10px; border-radius:6px; border:1px solid var(--border-color);">
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function submitUserReview(e) {
+        e.preventDefault();
+        let kpis = departmentKpis[currentAdminEmail] || [];
+        let memberObj = teamMembers.find(m => m.email === currentLoggedInUser);
+        let memberName = memberObj ? memberObj.name : currentLoggedInUser;
+
+        // Remove old submissions by this user
+        submittedReviews = submittedReviews.filter(r => r.memberEmail !== currentLoggedInUser);
+
+        kpis.forEach((row, index) => {
+            let rating = document.getElementById(`user_rating_${index}`).value;
+            let comment = document.getElementById(`user_comment_${index}`).value;
+            submittedReviews.push({
+                memberEmail: currentLoggedInUser,
+                memberName: memberName,
+                adminEmail: currentAdminEmail,
+                taskIndex: index,
+                taskName: row.task,
+                selfRating: rating,
+                selfComment: comment,
+                adminScore: '',
+                adminComment: ''
+            });
+        });
+
+        showToast("Performance review submitted successfully!");
+    }
+
+    function renderAdminReports() {
+        const tbody = document.getElementById('adminReportTableBody');
+        tbody.innerHTML = '';
+        let myReviews = submittedReviews.filter(r => r.adminEmail === currentAdminEmail);
+        if (myReviews.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-light);">No performance reviews submitted by department members yet.</td></tr>`;
+            return;
+        }
+        myReviews.forEach((rev, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${rev.memberName}</strong></td>
+                    <td>${rev.taskName}</td>
+                    <td><span style="background:#e3f2fd; padding:3px 8px; border-radius:4px; font-weight:600;">${rev.selfRating} / 5</span></td>
+                    <td>${rev.selfComment}</td>
+                    <td>
+                        <select id="admin_score_${index}" style="padding: 6px; border-radius: 6px; border:1px solid var(--border-color);">
+                            <option value="" ${rev.adminScore === '' ? 'selected' : ''} disabled>Score</option>
+                            <option value="1" ${rev.adminScore === '1' ? 'selected' : ''}>1</option>
+                            <option value="2" ${rev.adminScore === '2' ? 'selected' : ''}>2</option>
+                            <option value="3" ${rev.adminScore === '3' ? 'selected' : ''}>3</option>
+                            <option value="4" ${rev.adminScore === '4' ? 'selected' : ''}>4</option>
+                            <option value="5" ${rev.adminScore === '5' ? 'selected' : ''}>5</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" id="admin_comment_${index}" value="${rev.adminComment || ''}" placeholder="Manager comment..." style="padding: 6px 10px; border-radius:6px; border:1px solid var(--border-color);">
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function saveAdminEvaluations() {
+        let myReviews = submittedReviews.filter(r => r.adminEmail === currentAdminEmail);
+        myReviews.forEach((rev, index) => {
+            let scoreElem = document.getElementById(`admin_score_${index}`);
+            let commentElem = document.getElementById(`admin_comment_${index}`);
+            if(scoreElem && commentElem) {
+                rev.adminScore = scoreElem.value;
+                rev.adminComment = commentElem.value;
+            }
+        });
+        showToast("Admin evaluations and scores saved successfully!");
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.className = "show";
+        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+    }
+</script>
+
+</body>
+</html>

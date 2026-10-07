@@ -1,0 +1,184 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: index.html");
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Times of Eswatini - Admin Upload Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root { --primary-color: #8B0000; --primary-hover: #600000; --text-dark: #333333; --text-light: #666666; --border-color: #e0e0e0; --bg-light: #f9f9f9; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+    body { background:linear-gradient(135deg,#8B0000,#D40000); height:100vh; display:flex; justify-content:center; align-items:center; overflow:hidden; }
+    .container { width:100%; max-width:900px; background:white; border-radius:20px; box-shadow:0 20px 50px rgba(0,0,0,0.25); padding:30px 40px; max-height:90vh; display:flex; flex-direction:column; }
+    .portal-header { text-align:center; border-bottom:2px solid #f0f0f0; padding-bottom:12px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
+    .portal-header h2 { color:var(--primary-color); font-size:24px; font-weight:700; margin:0; }
+    .portal-header .header-right { display:flex; align-items:center; gap:15px; }
+    .portal-header .header-right a { color:var(--primary-color); text-decoration:none; font-size:13px; font-weight:500; padding:6px 14px; border:1px solid var(--primary-color); border-radius:20px; transition:all 0.3s ease; }
+    .portal-header .header-right a:hover { background:var(--primary-color); color:white; }
+    #uploadForm { display:flex; flex-direction:column; flex-grow:1; overflow:hidden; }
+    .form-scroll-area { overflow-y:auto; padding-right:5px; flex-grow:1; margin-bottom:15px; }
+    .form-scroll-area::-webkit-scrollbar { width:6px; }
+    .form-scroll-area::-webkit-scrollbar-thumb { background:#ccc; border-radius:10px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .form-group { margin-bottom:15px; }
+    label { display:block; font-weight:500; color:var(--text-dark); margin-bottom:5px; font-size:13px; }
+    input[type=text], textarea, select { width:100%; padding:10px 14px; border:1px solid var(--border-color); border-radius:8px; font-size:14px; color:var(--text-dark); transition:all 0.3s ease; background:#fff; }
+    input[type=text]:focus, textarea:focus, select:focus { border-color:var(--primary-color); outline:none; box-shadow:0 0 0 3px rgba(139,0,0,0.1); }
+    textarea { resize:none; height:60px; }
+    .drop-zone { border:2px dashed var(--border-color); border-radius:8px; padding:12px; text-align:center; background:var(--bg-light); cursor:pointer; transition:all 0.3s ease; position:relative; }
+    .drop-zone:hover, .drop-zone.dragover { border-color:var(--primary-color); background:rgba(139,0,0,0.03); }
+    .drop-zone input[type="file"] { display:none; }
+    .drop-zone-icon svg { width:24px; height:24px; stroke:var(--primary-color); margin-bottom:2px; }
+    .drop-zone-text { font-size:12px; color:var(--text-dark); font-weight:500; }
+    .drop-zone-subtext { font-size:10px; color:var(--text-light); }
+    .file-list-container { margin-top:8px; max-height:85px; overflow-y:auto; padding-right:2px; }
+    .file-list-container::-webkit-scrollbar { width:4px; }
+    .file-list-container::-webkit-scrollbar-thumb { background:#ddd; border-radius:10px; }
+    .file-item { display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid #eee; padding:6px 10px; border-radius:6px; margin-bottom:4px; font-size:11px; }
+    .file-item-info { display:flex; align-items:center; gap:6px; color:var(--text-dark); }
+    .remove-file-btn { background:rgba(255,0,0,0.1); color:#d32f2f; border:none; width:20px; height:20px; border-radius:50%; cursor:pointer; display:flex; justify-content:center; align-items:center; font-size:12px; }
+    .remove-file-btn:hover { background:#d32f2f; color:white; }
+    .submit-btn { width:100%; padding:12px; background:var(--primary-color); color:white; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; transition:all 0.3s ease; flex-shrink:0; display:flex; justify-content:center; align-items:center; gap:10px; }
+    .submit-btn:hover { background:var(--primary-hover); }
+    .action-links { margin-top:15px; display:flex; gap:15px; justify-content:center; flex-wrap:wrap; }
+    .action-links a { background:#0056b3; color:white; text-decoration:none; padding:10px 20px; border-radius:6px; font-size:14px; font-weight:500; transition:all 0.3s ease; display:inline-flex; align-items:center; gap:8px; }
+    .action-links a:hover { background:#003d80; transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.2); }
+    #toast { visibility:hidden; min-width:250px; background-color:#333; color:#fff; text-align:center; border-radius:8px; padding:12px; position:fixed; z-index:1000; right:30px; bottom:30px; font-size:14px; box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+    #toast.show { visibility:visible; animation:fadein 0.5s, fadeout 0.5s 2.5s; }
+    @keyframes fadein { from {bottom:0; opacity:0;} to {bottom:30px; opacity:1;} }
+    @keyframes fadeout { from {bottom:30px; opacity:1;} to {bottom:0; opacity:0;} }
+    @media(max-width:768px) { .form-row { grid-template-columns:1fr; gap:0; } body { height:auto; overflow:auto; padding:20px; } .container { max-height:none; } }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="portal-header">
+        <h2>📄 Documents</h2>
+        <div class="header-right">
+            <a href="addinshash.php" title="Assign documents to employees">📋 Assign</a>
+            <a href="logout.php">🚪 Logout</a>
+        </div>
+    </div>
+
+    <form action="upload.php" method="POST" enctype="multipart/form-data" id="uploadForm">
+        <div class="form-scroll-area">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Document Category</label>
+                    <select name="category" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="KPI">KPI</option>
+                        <option value="SOP">SOP</option>
+                        <option value="Policy">Policy</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Document Title</label>
+                    <input type="text" name="title" placeholder="e.g. Q3 Performance Metrics" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" placeholder="Brief outline of the document content..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Select Files</label>
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                        </svg>
+                    </div>
+                    <div class="drop-zone-text">Drag & Drop files here or click to browse</div>
+                    <div class="drop-zone-subtext">PDF, DOCX, XLSX allowed (max 5MB each)</div>
+                    <input type="file" id="fileInput" name="documents[]" multiple required>
+                </div>
+                <div class="file-list-container" id="fileListContainer"></div>
+            </div>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">
+            <span>Upload Documents</span>
+        </button>
+    </form>
+
+    <!-- Quick action links (optional extra) -->
+    <div class="action-links">
+        <a href="addinshash.php">📋 Assign Documents to Employees</a>
+    </div>
+</div>
+
+<div id="toast">Document uploaded successfully!</div>
+
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileListContainer = document.getElementById('fileListContainer');
+    const uploadForm = document.getElementById('uploadForm');
+
+    let dataTransfer = new DataTransfer();
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    ['dragenter','dragover','dragleave','drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+    dropZone.addEventListener('dragenter', () => dropZone.classList.add('dragover'));
+    dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => { dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+
+    fileInput.addEventListener('change', function() { handleFiles(this.files); });
+
+    function handleFiles(files) {
+        for (let i = 0; i < files.length; i++) {
+            dataTransfer.items.add(files[i]);
+        }
+        fileInput.files = dataTransfer.files;
+        renderFileList();
+    }
+
+    function renderFileList() {
+        fileListContainer.innerHTML = '';
+        if (dataTransfer.files.length > 0) {
+            fileInput.removeAttribute('required');
+        } else {
+            fileInput.setAttribute('required', 'required');
+        }
+        Array.from(dataTransfer.files).forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.classList.add('file-item');
+            fileItem.innerHTML = `
+                <div class="file-item-info">
+                    <span>📄 <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)</span>
+                </div>
+                <button type="button" class="remove-file-btn" onclick="removeFile(${index})" title="Remove">×</button>
+            `;
+            fileListContainer.appendChild(fileItem);
+        });
+    }
+
+    window.removeFile = function(index) {
+        const dt = new DataTransfer();
+        for (let i = 0; i < dataTransfer.files.length; i++) {
+            if (i !== index) dt.items.add(dataTransfer.files[i]);
+        }
+        dataTransfer = dt;
+        fileInput.files = dataTransfer.files;
+        renderFileList();
+    }
+
+    uploadForm.addEventListener('submit', function(e) {
+        const btn = document.getElementById('submitBtn');
+        btn.innerHTML = `<span>Uploading...</span>`;
+        btn.style.opacity = '0.8';
+    });
+</script>
+</body>
+</html>
